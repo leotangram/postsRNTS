@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<StackNavigation /> should show posts 1`] = `
+exports[`<StackNavigation /> should show posts in <PostsScreen /> 1`] = `
 <View
   style={
     Object {

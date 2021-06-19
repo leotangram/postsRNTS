@@ -4,9 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { colors } from '../theme/appTheme'
 import PostsScreen from '../screens/PostsScreen'
 import PostScreen from '../screens/PostScreen'
-import { NavigationContainer } from '@react-navigation/native'
+import { RootStackParams } from '../interfaces/interfaces'
 
-const { Navigator, Screen } = createStackNavigator()
+const { Navigator, Screen } = createStackNavigator<RootStackParams>()
 
 const StackNavigation = () => {
   return (

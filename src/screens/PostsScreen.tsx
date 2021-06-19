@@ -21,7 +21,7 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
     getPosts()
   }, [])
 
-  const onOpacityPress = (post: any) => navigation.navigate('Post', post)
+  const onOpacityPress = (post: any) => navigation.navigate('Post', { ...post })
 
   return (
     <View>

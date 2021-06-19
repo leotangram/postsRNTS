@@ -6,7 +6,7 @@ import StackNavigation from '../../src/navigation/StackNavigation'
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
 
 describe('<StackNavigation />', () => {
-  test('should show posts', async () => {
+  test('should show posts in <PostsScreen />', async () => {
     const component = (
       <NavigationContainer>
         <StackNavigation />
