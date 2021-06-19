@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Platform, StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icon from 'react-native-vector-icons/Ionicons'
 
@@ -36,12 +36,17 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
               style={styles.row}
               testID={post.id.toString()}
             >
-              <View style={styles.dotContainer}>
+              <View style={styles.iconLeft}>
                 {index < 20 && (
                   <Icon name="ellipse" size={23} color={colors.blue} />
                 )}
               </View>
               <Text style={styles.postTitle}>{post.title}</Text>
+              <View style={styles.iconRight}>
+                {Platform.OS === 'ios' && (
+                  <Icon name="chevron-forward" size={23} color={colors.gray} />
+                )}
+              </View>
             </TouchableOpacity>
           )}
           testID="posts"
@@ -56,18 +61,24 @@ export default PostsScreen
 const styles = StyleSheet.create({
   row: {
     alignItems: 'center',
+    backgroundColor: colors.white,
     borderBottomColor: colors.divider,
     borderBottomWidth: 1,
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 10
   },
-  dotContainer: {
-    marginRight: 10
+  iconLeft: {
+    marginRight: 10,
+    width: 25
   },
   postTitle: {
     flex: 1,
     flexWrap: 'wrap',
     fontSize: 20
+  },
+  iconRight: {
+    marginLeft: 10,
+    width: 25
   }
 })
