@@ -14,7 +14,7 @@ const App = () => {
           flex: 1,
           backgroundColor: colors.primary
         }}
-        testID="container"
+        testID="cotainer"
       >
         <StatusBar animated={true} backgroundColor={colors.darkPrimary} />
         <NavigationContainer>
