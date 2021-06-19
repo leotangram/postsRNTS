@@ -1,9 +1,9 @@
 import React, { FC, useEffect, useState } from 'react'
 import { Text, StyleSheet, View, FlatList } from 'react-native'
 
-import { IPostScreenProps, IUser, IComment } from '../interfaces/interfaces'
 import { jsonPlaceHolderServices } from '../services/jsonPlaceHolderServices'
 import { colors } from '../theme/appTheme'
+import { IPostScreenProps, IUser, IComment } from '../interfaces/interfaces'
 
 const PostScreen: FC<IPostScreenProps> = ({ route }) => {
   const [user, setUser] = useState<IUser | null>(null)

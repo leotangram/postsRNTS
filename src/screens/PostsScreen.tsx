@@ -1,11 +1,17 @@
 import React, { FC, useEffect, useState } from 'react'
-import { FlatList, Platform, StyleSheet, Text, View } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import {
+  FlatList,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { IPostsScreenProps, IPost } from '../interfaces/interfaces'
 import { jsonPlaceHolderServices } from '../services/jsonPlaceHolderServices'
 import { colors } from '../theme/appTheme'
+import { IPostsScreenProps, IPost } from '../interfaces/interfaces'
 
 const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
   const [posts, setPosts] = useState<IPost[] | null>(null)
