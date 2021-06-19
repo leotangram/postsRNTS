@@ -9,5 +9,9 @@ export const jsonPlaceHolderServices = {
   getUser: (id: number) => {
     const url = urls.user(id)
     return api.get(url)
+  },
+  getCommentsPost: (postId: number) => {
+    const url = urls.commentsPost(postId)
+    return api.get(url)
   }
 }

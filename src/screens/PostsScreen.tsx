@@ -33,6 +33,7 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
             <TouchableOpacity
               onPress={() => onOpacityPress(post)}
               style={styles.row}
+              testID={post.id.toString()}
             >
               <Text style={styles.postTitle}>{post.title}</Text>
             </TouchableOpacity>
