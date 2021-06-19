@@ -7,37 +7,39 @@ import { jsonPlaceHolderServices } from '../services/jsonPlaceHolderServices'
 import { colors } from '../theme/appTheme'
 
 const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
-  const [posts, setPosts] = useState<IPost[]>([])
+  const [posts, setPosts] = useState<IPost[] | null>(null)
 
   useEffect(() => {
+    const getPosts = async () => {
+      try {
+        const { data } = await jsonPlaceHolderServices.getPosts()
+        setPosts(data)
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
     getPosts()
   }, [])
-
-  const getPosts = async () => {
-    try {
-      const { data } = await jsonPlaceHolderServices.getPosts()
-      setPosts(data)
-    } catch (error) {
-      console.log('error', error)
-    }
-  }
 
   const onOpacityPress = (post: any) => navigation.navigate('Post', post)
 
   return (
     <View>
-      <FlatList
-        keyExtractor={({ id }) => `${id}`}
-        data={posts}
-        renderItem={({ item: post }) => (
-          <TouchableOpacity
-            onPress={() => onOpacityPress(post)}
-            style={styles.row}
-          >
-            <Text style={styles.postTitle}>{post.title}</Text>
-          </TouchableOpacity>
-        )}
-      />
+      {posts && (
+        <FlatList
+          keyExtractor={({ id }) => `${id}`}
+          data={posts}
+          renderItem={({ item: post }) => (
+            <TouchableOpacity
+              onPress={() => onOpacityPress(post)}
+              style={styles.row}
+            >
+              <Text style={styles.postTitle}>{post.title}</Text>
+            </TouchableOpacity>
+          )}
+          testID="posts"
+        />
+      )}
     </View>
   )
 }
