@@ -1,29 +1,40 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
-import { StackScreenProps } from '@react-navigation/stack'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-interface PostsScreenProps extends StackScreenProps<any, any> {}
+import { IPostsScreenProps, IPost } from '../interfaces/interfaces'
+import { jsonPlaceHolderServices } from '../services/jsonPlaceHolderServices'
+import { colors } from '../theme/appTheme'
 
-const PostsScreen: FC<PostsScreenProps> = ({ navigation }) => {
-  const [items] = React.useState(
-    new Array(20).fill(null).map((_, idx) => idx + 1)
-  )
+const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
+  const [posts, setPosts] = useState<IPost[]>([])
 
-  const onOpacityPress = (item: any) => navigation.navigate('Post', item)
+  useEffect(() => {
+    getPosts()
+  }, [])
+
+  const getPosts = async () => {
+    try {
+      const { data } = await jsonPlaceHolderServices.getPosts()
+      setPosts(data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  const onOpacityPress = (post: any) => navigation.navigate('Post', post)
 
   return (
     <View>
-      <Text style={styles.header}>List of numbers from 1 to 20</Text>
       <FlatList
-        keyExtractor={(_, idx) => `${idx}`}
-        data={items}
-        renderItem={({ item }) => (
+        keyExtractor={({ id }) => `${id}`}
+        data={posts}
+        renderItem={({ item: post }) => (
           <TouchableOpacity
-            onPress={() => onOpacityPress(item)}
+            onPress={() => onOpacityPress(post)}
             style={styles.row}
           >
-            <Text>Item number {item}</Text>
+            <Text style={styles.postTitle}>{post.title}</Text>
           </TouchableOpacity>
         )}
       />
@@ -33,18 +44,14 @@ const PostsScreen: FC<PostsScreenProps> = ({ navigation }) => {
 
 export default PostsScreen
 
-const divider = '#DDDDDD'
-
 const styles = StyleSheet.create({
-  header: {
-    fontSize: 20,
-    textAlign: 'center',
-    marginVertical: 16
-  },
   row: {
-    paddingVertical: 16,
+    paddingVertical: 10,
     paddingHorizontal: 24,
-    borderBottomColor: divider,
+    borderBottomColor: colors.divider,
     borderBottomWidth: 1
+  },
+  postTitle: {
+    fontSize: 20
   }
 })
