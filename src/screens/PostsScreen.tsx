@@ -1,8 +1,17 @@
 import React, { FC, useEffect, useState } from 'react'
-import { FlatList, View } from 'react-native'
+import {
+  FlatList,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Icon from 'react-native-vector-icons/Ionicons'
 
 import { jsonPlaceHolderServices } from '../services/jsonPlaceHolderServices'
+import { colors } from '../theme/appTheme'
 import { IPostsScreenProps, IPost } from '../interfaces/interfaces'
 import PostItem from '../components/PostItem'
 
@@ -78,26 +87,78 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
     setPosts(posts!.filter(({ id }) => id !== postId))
   }
 
+  const deleteAllPosts = () => {
+    setPosts(null)
+  }
+
+  const deleteIOSButton = () => (
+    <TouchableOpacity onPress={deleteAllPosts} style={styles.deleteIOSButton}>
+      <Text style={styles.deleteIOSText}>Delete All</Text>
+    </TouchableOpacity>
+  )
+
+  const deleteAndroidButton = () => (
+    <TouchableOpacity
+      onPress={deleteAllPosts}
+      style={styles.deleteAndroidButton}
+    >
+      <Icon name="trash" size={30} color={colors.white} />
+    </TouchableOpacity>
+  )
+
   return (
-    <View>
+    <View style={styles.container}>
       {posts && (
-        <FlatList
-          keyExtractor={({ id }) => `${id}`}
-          data={posts}
-          renderItem={({ item: post, index }) => (
-            <PostItem
-              deletePost={deletePost}
-              index={index}
-              onOpacityPress={onOpacityPress}
-              post={post}
-              reads={reads}
-            />
-          )}
-          testID="posts"
-        />
+        <>
+          <FlatList
+            keyExtractor={({ id }) => `${id}`}
+            data={posts}
+            renderItem={({ item: post, index }) => (
+              <PostItem
+                deletePost={deletePost}
+                index={index}
+                onOpacityPress={onOpacityPress}
+                post={post}
+                reads={reads}
+              />
+            )}
+            testID="posts"
+          />
+          {Platform.OS === 'android'
+            ? deleteAndroidButton()
+            : deleteIOSButton()}
+        </>
       )}
     </View>
   )
 }
 
 export default PostsScreen
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  deleteIOSButton: {
+    alignItems: 'center',
+    backgroundColor: colors.red,
+    height: 50,
+    justifyContent: 'center'
+  },
+  deleteIOSText: {
+    color: colors.white,
+    fontSize: 18
+  },
+  deleteAndroidButton: {
+    alignItems: 'center',
+    backgroundColor: colors.red,
+    borderRadius: 100,
+    bottom: 20,
+    elevation: 5,
+    height: 65,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 20,
+    width: 65
+  }
+})

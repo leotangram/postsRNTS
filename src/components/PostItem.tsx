@@ -20,7 +20,7 @@ const PostItem: FC<IPostItemProps> = ({
   post,
   reads
 }) => {
-  const swipe = (_: any, dragX: Animated.AnimatedInterpolation) => {
+  const swipeLeft = (_: any, dragX: Animated.AnimatedInterpolation) => {
     const scale = dragX.interpolate({
       inputRange: [0, 100],
       outputRange: [0, 1],
@@ -40,7 +40,7 @@ const PostItem: FC<IPostItemProps> = ({
   }
 
   return (
-    <Swipeable renderLeftActions={swipe}>
+    <Swipeable renderLeftActions={swipeLeft}>
       <TouchableOpacity
         onPress={() => onOpacityPress(post)}
         style={styles.row}
