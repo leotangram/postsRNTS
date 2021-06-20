@@ -37,3 +37,11 @@ export interface IComment {
   id: string
   body: string
 }
+
+export interface IPostsState {
+  posts: IPost[] | null
+}
+
+export interface IPostsContextProps {
+  postsState: IPostsState
+}
