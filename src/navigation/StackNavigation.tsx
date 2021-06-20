@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -20,11 +20,14 @@ const StackNavigation = () => {
     resetPosts
   } = useContext(PostsContext)
 
+  const [reloadfavorite, setReloadfavorite] = useState(false)
+
   useEffect(() => {
     getFavorites()
   }, [])
 
   const addToFavorites = async (postId: string) => {
+    setReloadfavorite(true)
     let stringifiedArray
     if (favorites.includes(postId)) {
       const removedPostId = favorites.filter(favorite => favorite !== postId)
@@ -38,6 +41,8 @@ const StackNavigation = () => {
       getFavorites()
     } catch (error) {
       console.log(error)
+    } finally {
+      setReloadfavorite(false)
     }
   }
 
@@ -83,7 +88,7 @@ const StackNavigation = () => {
           headerRight: () => {
             const postId: string = route.params.id.toString()
             const isFavorite = favorites.includes(postId)
-            return (
+            return !reloadfavorite ? (
               <TouchableOpacity
                 onPress={() => addToFavorites(postId)}
                 style={styles.favoriteIcon}
@@ -94,6 +99,12 @@ const StackNavigation = () => {
                   color={isFavorite ? colors.yellow : colors.white}
                 />
               </TouchableOpacity>
+            ) : (
+              <ActivityIndicator
+                style={styles.favoriteIcon}
+                size="small"
+                color={colors.white}
+              />
             )
           },
           headerBackTitleVisible: false
