@@ -59,7 +59,17 @@ const StackNavigation = () => {
         headerTintColor: colors.white
       }}
     >
-      <Screen name="Posts" component={PostsScreen} />
+      <Screen
+        name="Posts"
+        component={PostsScreen}
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => {}} style={styles.favoriteIcon}>
+              <Icon name="reload" size={23} color={colors.white} />
+            </TouchableOpacity>
+          )
+        }}
+      />
       <Screen
         name="Post"
         component={PostScreen}
