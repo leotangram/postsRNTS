@@ -74,6 +74,10 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
     navigation.navigate('Post', { ...post })
   }
 
+  const deletePost = (postId: number) => {
+    setPosts(posts!.filter(({ id }) => id !== postId))
+  }
+
   return (
     <View>
       {posts && (
@@ -82,6 +86,7 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
           data={posts}
           renderItem={({ item: post, index }) => (
             <PostItem
+              deletePost={deletePost}
               index={index}
               onOpacityPress={onOpacityPress}
               post={post}

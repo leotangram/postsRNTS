@@ -12,9 +12,10 @@ export interface IPostScreenProps
 
 export interface IPostItemProps {
   index: number
-  onOpacityPress: (post: IPost) => void
   post: IPost
   reads: string[]
+  deletePost: (postId: number) => void
+  onOpacityPress: (post: IPost) => void
 }
 
 export interface IPost {

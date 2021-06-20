@@ -5,6 +5,7 @@ export const colors = {
   divider: '#dddddd',
   gray: '#d6d5d5',
   primary: '#00a528',
+  red: '#d4001f',
   yellow: '#f8e23d',
   white: '#ffffff'
 }

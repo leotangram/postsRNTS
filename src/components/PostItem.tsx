@@ -14,6 +14,7 @@ import { IPostItemProps } from '../interfaces/interfaces'
 import { colors } from '../theme/appTheme'
 
 const PostItem: FC<IPostItemProps> = ({
+  deletePost,
   index,
   onOpacityPress,
   post,
@@ -28,7 +29,7 @@ const PostItem: FC<IPostItemProps> = ({
     return (
       <TouchableOpacity
         activeOpacity={0.6}
-        onPress={() => {}}
+        onPress={() => deletePost(post.id)}
         style={styles.deleteBox}
       >
         <Animated.Text style={{ ...styles.deleteText, transform: [{ scale }] }}>
@@ -87,13 +88,14 @@ const styles = StyleSheet.create({
     width: 25
   },
   deleteBox: {
-    backgroundColor: 'red',
-    justifyContent: 'center',
     alignItems: 'center',
-    width: 100,
-    height: 80
+    backgroundColor: colors.red,
+    height: 'auto',
+    justifyContent: 'center',
+    width: 100
   },
   deleteText: {
+    color: colors.white,
     fontSize: 25
   }
 })
