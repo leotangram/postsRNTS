@@ -8,8 +8,6 @@ import { colors } from '../theme/appTheme'
 const { Navigator, Screen } = createMaterialTopTabNavigator()
 
 const TopTabNavigation = () => {
-  // const
-
   return (
     <Navigator
       tabBarOptions={{

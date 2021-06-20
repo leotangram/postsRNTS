@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useContext, useEffect } from 'react'
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import Icon from 'react-native-vector-icons/Ionicons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -16,6 +16,7 @@ const StackNavigation = () => {
   const {
     getFavorites,
     postsState: { favorites },
+    reload,
     resetPosts
   } = useContext(PostsContext)
 
@@ -58,11 +59,21 @@ const StackNavigation = () => {
         name="Posts"
         component={TopTabNavigation}
         options={{
-          headerRight: () => (
-            <TouchableOpacity onPress={resetPosts} style={styles.favoriteIcon}>
-              <Icon name="reload" size={23} color={colors.white} />
-            </TouchableOpacity>
-          )
+          headerRight: () =>
+            !reload ? (
+              <TouchableOpacity
+                onPress={resetPosts}
+                style={styles.favoriteIcon}
+              >
+                <Icon name="reload" size={23} color={colors.white} />
+              </TouchableOpacity>
+            ) : (
+              <ActivityIndicator
+                style={styles.favoriteIcon}
+                size="small"
+                color={colors.white}
+              />
+            )
         }}
       />
       <Screen

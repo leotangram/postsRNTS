@@ -46,6 +46,7 @@ export interface IPostsState {
 
 export interface IPostsContextProps {
   postsState: IPostsState
+  reload: boolean
   getFavorites: () => void
   getPosts: () => void
   getReads: () => void

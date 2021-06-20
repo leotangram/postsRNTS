@@ -1,4 +1,4 @@
-import React, { createContext, FC, useReducer } from 'react'
+import React, { createContext, FC, useReducer, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import {
@@ -19,6 +19,7 @@ export const PostsContext = createContext({} as IPostsContextProps)
 
 export const PostsProvider: FC = ({ children }) => {
   const [postsState, dispatch] = useReducer(postsReducer, postsInitialState)
+  const [reload, setReload] = useState(false)
 
   const setFavorites = (favorites: string[]) =>
     dispatch({ type: 'favorites', payload: favorites })
@@ -46,6 +47,7 @@ export const PostsProvider: FC = ({ children }) => {
   }
 
   const resetPosts = async () => {
+    setReload(true)
     try {
       await AsyncStorage.removeItem('posts')
       await AsyncStorage.removeItem('favorites')
@@ -55,6 +57,8 @@ export const PostsProvider: FC = ({ children }) => {
       setReads([])
     } catch (error) {
       console.log(error)
+    } finally {
+      setReload(false)
     }
   }
 
@@ -77,6 +81,7 @@ export const PostsProvider: FC = ({ children }) => {
         getReads,
         postsState,
         setPosts,
+        reload,
         resetPosts
       }}
     >
