@@ -15,11 +15,13 @@ import { IPostsScreenProps, IPost } from '../interfaces/interfaces'
 import PostItem from '../components/PostItem'
 import { PostsContext } from '../context/PostsContext'
 
-const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
+const PostsScreen: FC<IPostsScreenProps> = ({ navigation, route }) => {
+  const [favoritePosts, setFavoritePosts] = useState<IPost[]>([])
+
   const {
     getPosts,
     getReads,
-    postsState: { posts, reads },
+    postsState: { favorites, posts, reads },
     setPosts
   } = useContext(PostsContext)
 
@@ -50,6 +52,15 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
       addPostsToStorage()
     }
   }, [posts])
+
+  useEffect(() => {
+    if (favorites) {
+      const allFavorites = posts.filter(({ id }) =>
+        favorites.includes(id.toString())
+      )
+      setFavoritePosts(allFavorites)
+    }
+  }, [favorites])
 
   const onOpacityPress = async (post: IPost) => {
     const postId = post.id.toString()
@@ -92,7 +103,7 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
     <View style={styles.container}>
       <FlatList
         keyExtractor={({ id }) => `${id}`}
-        data={posts}
+        data={route.name === 'All' ? posts : favoritePosts}
         renderItem={({ item: post, index }) => (
           <PostItem
             deletePost={deletePost}

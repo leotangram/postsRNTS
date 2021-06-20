@@ -33,7 +33,7 @@ export const PostsProvider: FC = ({ children }) => {
     }
   }
 
-  const setPosts = (posts: IPost[] | null) =>
+  const setPosts = (posts: IPost[]) =>
     dispatch({ type: 'posts', payload: posts })
 
   const getPosts = async () => {
@@ -51,8 +51,8 @@ export const PostsProvider: FC = ({ children }) => {
       await AsyncStorage.removeItem('favorites')
       await AsyncStorage.removeItem('reads')
       getPosts()
-      setReads([])
       setFavorites([])
+      setReads([])
     } catch (error) {
       console.log(error)
     }

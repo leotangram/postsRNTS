@@ -7,8 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { colors } from '../theme/appTheme'
 import { RootStackParams } from '../interfaces/interfaces'
 import { PostsContext } from '../context/PostsContext'
-import PostsScreen from '../screens/PostsScreen'
 import PostScreen from '../screens/PostScreen'
+import TopTabNavigation from './TopTabNavigation'
 
 const { Navigator, Screen } = createStackNavigator<RootStackParams>()
 
@@ -56,7 +56,7 @@ const StackNavigation = () => {
     >
       <Screen
         name="Posts"
-        component={PostsScreen}
+        component={TopTabNavigation}
         options={{
           headerRight: () => (
             <TouchableOpacity onPress={resetPosts} style={styles.favoriteIcon}>
