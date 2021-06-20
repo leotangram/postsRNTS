@@ -12,6 +12,7 @@ export interface IPostScreenProps
 
 export interface IPostItemProps {
   index: number
+  loadDeletePost: boolean
   post: IPost
   reads: string[]
   deletePost: (postId: number) => void
@@ -45,6 +46,7 @@ export interface IPostsState {
 }
 
 export interface IPostsContextProps {
+  loadPosts: boolean
   postsState: IPostsState
   reload: boolean
   getFavorites: () => void

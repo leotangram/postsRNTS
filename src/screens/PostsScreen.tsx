@@ -1,5 +1,6 @@
 import React, { FC, useContext, useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
   FlatList,
   Platform,
   StyleSheet,
@@ -9,6 +10,7 @@ import {
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Icon from 'react-native-vector-icons/Ionicons'
+import AnimatedLoader from 'react-native-animated-loader'
 
 import { colors } from '../theme/appTheme'
 import { IPostsScreenProps, IPost } from '../interfaces/interfaces'
@@ -17,11 +19,16 @@ import { PostsContext } from '../context/PostsContext'
 
 const PostsScreen: FC<IPostsScreenProps> = ({ navigation, route }) => {
   const [favoritePosts, setFavoritePosts] = useState<IPost[]>([])
+  const [loadDeleteAllPosts, setLoadDeleteAllPosts] = useState(false)
+  const [loadDeletePost, setloadDeletePost] = useState(false)
 
   const {
+    getFavorites,
     getPosts,
     getReads,
+    loadPosts,
     postsState: { favorites, posts, reads },
+    reload,
     setPosts
   } = useContext(PostsContext)
 
@@ -42,6 +49,7 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (posts) {
       getReads()
+      getFavorites()
       const addPostsToStorage = async () => {
         try {
           await AsyncStorage.setItem('posts', JSON.stringify(posts))
@@ -55,6 +63,8 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation, route }) => {
 
   useEffect(() => {
     if (favorites) {
+      console.log('favorites', favorites)
+
       const allFavorites = posts.filter(({ id }) =>
         favorites.includes(id.toString())
       )
@@ -76,17 +86,40 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation, route }) => {
     navigation.navigate('Post', { ...post })
   }
 
-  const deletePost = (postId: number) => {
-    setPosts(posts!.filter(({ id }) => id !== postId))
+  const deletePost = async (postId: number) => {
+    setloadDeletePost(true)
+    try {
+      const favoriteDelete = favorites.filter(
+        favorite => favorite !== postId.toString()
+      )
+      await AsyncStorage.setItem('favorites', JSON.stringify(favoriteDelete))
+      setPosts(posts!.filter(({ id }) => id !== postId))
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setloadDeletePost(false)
+    }
   }
 
   const deleteAllPosts = () => {
-    setPosts([])
+    setLoadDeleteAllPosts(true)
+    setTimeout(() => {
+      setPosts([])
+      setLoadDeleteAllPosts(false)
+    }, 1500)
   }
 
   const deleteIOSButton = () => (
-    <TouchableOpacity onPress={deleteAllPosts} style={styles.deleteIOSButton}>
-      <Text style={styles.deleteIOSText}>Delete All</Text>
+    <TouchableOpacity
+      onPress={deleteAllPosts}
+      style={styles.deleteIOSButton}
+      disabled={loadDeleteAllPosts}
+    >
+      {!loadDeleteAllPosts ? (
+        <Text style={styles.deleteIOSText}>Delete All</Text>
+      ) : (
+        <ActivityIndicator size="small" color={colors.white} />
+      )}
     </TouchableOpacity>
   )
 
@@ -95,12 +128,36 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation, route }) => {
       onPress={deleteAllPosts}
       style={styles.deleteAndroidButton}
     >
-      <Icon name="trash" size={30} color={colors.white} />
+      {!loadDeleteAllPosts ? (
+        <Icon name="trash" size={30} color={colors.white} />
+      ) : (
+        <ActivityIndicator size="small" color={colors.white} />
+      )}
     </TouchableOpacity>
   )
 
   return (
     <View style={styles.container}>
+      <AnimatedLoader
+        visible={reload || loadPosts}
+        overlayColor="rgba(255,255,255,0.75)"
+        source={require('../assets/loties/8428-loader.json')}
+        animationStyle={styles.lottie}
+        speed={3}
+        loop
+      >
+        <Text>Loading...</Text>
+      </AnimatedLoader>
+      <AnimatedLoader
+        visible={loadDeleteAllPosts}
+        overlayColor="rgba(255,255,255,0.75)"
+        source={require('../assets/loties/7502-delete.json')}
+        animationStyle={styles.lottie}
+        speed={2}
+        loop
+      >
+        <Text>Removing...</Text>
+      </AnimatedLoader>
       <FlatList
         keyExtractor={({ id }) => `${id}`}
         data={route.name === 'All' ? posts : favoritePosts}
@@ -108,6 +165,7 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation, route }) => {
           <PostItem
             deletePost={deletePost}
             index={index}
+            loadDeletePost={loadDeletePost}
             onOpacityPress={onOpacityPress}
             post={post}
             reads={reads}
@@ -147,5 +205,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     width: 65
+  },
+  lottie: {
+    width: 300,
+    height: 300
   }
 })

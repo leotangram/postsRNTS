@@ -1,5 +1,6 @@
 import React, { FC, useContext } from 'react'
 import {
+  ActivityIndicator,
   Animated,
   Platform,
   StyleSheet,
@@ -16,6 +17,7 @@ import { PostsContext } from '../context/PostsContext'
 
 const PostItem: FC<IPostItemProps> = ({
   deletePost,
+  loadDeletePost,
   index,
   onOpacityPress,
   post,
@@ -36,10 +38,17 @@ const PostItem: FC<IPostItemProps> = ({
         activeOpacity={0.6}
         onPress={() => deletePost(post.id)}
         style={styles.deleteBox}
+        disabled={loadDeletePost}
       >
-        <Animated.Text style={{ ...styles.deleteText, transform: [{ scale }] }}>
-          Delete
-        </Animated.Text>
+        {!loadDeletePost ? (
+          <Animated.Text
+            style={{ ...styles.deleteText, transform: [{ scale }] }}
+          >
+            Delete
+          </Animated.Text>
+        ) : (
+          <ActivityIndicator size="small" color={colors.white} />
+        )}
       </TouchableOpacity>
     )
   }
@@ -50,6 +59,7 @@ const PostItem: FC<IPostItemProps> = ({
         onPress={() => onOpacityPress(post)}
         style={styles.row}
         testID={post.id.toString()}
+        disabled={loadDeletePost}
       >
         <View style={styles.iconLeft}>
           {index < 20 && !reads.includes(post.id.toString()) && (

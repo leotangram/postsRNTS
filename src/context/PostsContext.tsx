@@ -19,6 +19,7 @@ export const PostsContext = createContext({} as IPostsContextProps)
 
 export const PostsProvider: FC = ({ children }) => {
   const [postsState, dispatch] = useReducer(postsReducer, postsInitialState)
+  const [loadPosts, setLoadPosts] = useState(false)
   const [reload, setReload] = useState(false)
 
   const setFavorites = (favorites: string[]) =>
@@ -37,29 +38,36 @@ export const PostsProvider: FC = ({ children }) => {
   const setPosts = (posts: IPost[]) =>
     dispatch({ type: 'posts', payload: posts })
 
-  const getPosts = async () => {
-    try {
-      const { data } = await jsonPlaceHolderServices.getPosts()
-      setPosts(data)
-    } catch (error) {
-      console.log('error', error)
-    }
+  const getPosts = () => {
+    setLoadPosts(true)
+    setTimeout(async () => {
+      try {
+        const { data } = await jsonPlaceHolderServices.getPosts()
+        setPosts(data)
+      } catch (error) {
+        console.log('error', error)
+      } finally {
+        setLoadPosts(false)
+      }
+    }, 1500)
   }
 
-  const resetPosts = async () => {
+  const resetPosts = () => {
     setReload(true)
-    try {
-      await AsyncStorage.removeItem('posts')
-      await AsyncStorage.removeItem('favorites')
-      await AsyncStorage.removeItem('reads')
-      getPosts()
-      setFavorites([])
-      setReads([])
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setReload(false)
-    }
+    setTimeout(async () => {
+      try {
+        await AsyncStorage.removeItem('posts')
+        await AsyncStorage.removeItem('favorites')
+        await AsyncStorage.removeItem('reads')
+        getPosts()
+        setFavorites([])
+        setReads([])
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setReload(false)
+      }
+    }, 1000)
   }
 
   const setReads = (reads: string[]) =>
@@ -79,6 +87,7 @@ export const PostsProvider: FC = ({ children }) => {
         getFavorites,
         getPosts,
         getReads,
+        loadPosts,
         postsState,
         setPosts,
         reload,
