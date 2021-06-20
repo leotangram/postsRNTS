@@ -1,22 +1,28 @@
 import React, { FC, useEffect, useState } from 'react'
-import {
-  FlatList,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
+import { FlatList, View } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { jsonPlaceHolderServices } from '../services/jsonPlaceHolderServices'
-import { colors } from '../theme/appTheme'
 import { IPostsScreenProps, IPost } from '../interfaces/interfaces'
+import PostItem from '../components/PostItem'
 
 const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
   const [posts, setPosts] = useState<IPost[] | null>(null)
+  const [reads, setReads] = useState<string[]>([])
 
   useEffect(() => {
+    const getPostsStoraged = async () => {
+      try {
+        const storagedPosts = await AsyncStorage.getItem('posts')
+        if (!storagedPosts) {
+          getPosts()
+        } else {
+          setPosts(JSON.parse(storagedPosts))
+        }
+      } catch (error) {}
+    }
+    getPostsStoraged()
+
     const getPosts = async () => {
       try {
         const { data } = await jsonPlaceHolderServices.getPosts()
@@ -25,10 +31,48 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
         console.log('error', error)
       }
     }
-    getPosts()
   }, [])
 
-  const onOpacityPress = (post: any) => navigation.navigate('Post', { ...post })
+  useEffect(() => {
+    if (posts) {
+      getReads()
+      const addPostsToStorage = async () => {
+        try {
+          await AsyncStorage.setItem('posts', JSON.stringify(posts))
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      addPostsToStorage()
+    }
+  }, [posts])
+
+  const getReads = async () => {
+    const storagedReads: string | null = await AsyncStorage.getItem('favorites')
+    if (storagedReads) {
+      const stringToArrayFavorites = JSON.parse(storagedReads)
+      setReads([...stringToArrayFavorites])
+    }
+  }
+
+  const onOpacityPress = async (post: IPost) => {
+    const postId = post.id.toString()
+    let stringifiedReads
+    if (reads.includes(postId)) {
+      const removedPostId = reads.filter(read => read !== postId)
+      stringifiedReads = JSON.stringify([...removedPostId])
+    } else {
+      stringifiedReads = JSON.stringify([...reads, postId])
+    }
+
+    try {
+      await AsyncStorage.setItem('favorites', stringifiedReads)
+      getReads()
+    } catch (error) {
+      console.log(error)
+    }
+    navigation.navigate('Post', { ...post })
+  }
 
   return (
     <View>
@@ -37,23 +81,12 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
           keyExtractor={({ id }) => `${id}`}
           data={posts}
           renderItem={({ item: post, index }) => (
-            <TouchableOpacity
-              onPress={() => onOpacityPress(post)}
-              style={styles.row}
-              testID={post.id.toString()}
-            >
-              <View style={styles.iconLeft}>
-                {index < 20 && (
-                  <Icon name="ellipse" size={23} color={colors.blue} />
-                )}
-              </View>
-              <Text style={styles.postTitle}>{post.title}</Text>
-              <View style={styles.iconRight}>
-                {Platform.OS === 'ios' && (
-                  <Icon name="chevron-forward" size={23} color={colors.gray} />
-                )}
-              </View>
-            </TouchableOpacity>
+            <PostItem
+              index={index}
+              onOpacityPress={onOpacityPress}
+              post={post}
+              reads={reads}
+            />
           )}
           testID="posts"
         />
@@ -63,28 +96,3 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
 }
 
 export default PostsScreen
-
-const styles = StyleSheet.create({
-  row: {
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    borderBottomColor: colors.divider,
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 10
-  },
-  iconLeft: {
-    marginRight: 10,
-    width: 25
-  },
-  postTitle: {
-    flex: 1,
-    flexWrap: 'wrap',
-    fontSize: 20
-  },
-  iconRight: {
-    marginLeft: 10,
-    width: 25
-  }
-})

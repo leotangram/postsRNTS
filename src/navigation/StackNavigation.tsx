@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -8,14 +8,11 @@ import { colors } from '../theme/appTheme'
 import { RootStackParams } from '../interfaces/interfaces'
 import PostsScreen from '../screens/PostsScreen'
 import PostScreen from '../screens/PostScreen'
-import { useState } from 'react'
-import { useEffect } from 'react'
 
 const { Navigator, Screen } = createStackNavigator<RootStackParams>()
 
 const StackNavigation = () => {
   const [favorites, setFavorites] = useState<string[]>([])
-  console.log('favorites', favorites)
 
   useEffect(() => {
     getFavorites()
@@ -35,7 +32,6 @@ const StackNavigation = () => {
     let stringifiedArray
     if (favorites.includes(postId)) {
       const removedPostId = favorites.filter(favorite => favorite !== postId)
-      console.log('removedPostId', removedPostId)
       stringifiedArray = JSON.stringify([...removedPostId])
     } else {
       stringifiedArray = JSON.stringify([...favorites, postId])

@@ -10,6 +10,13 @@ export interface IPostsScreenProps extends StackScreenProps<any, any> {}
 export interface IPostScreenProps
   extends StackScreenProps<RootStackParams, 'Post'> {}
 
+export interface IPostItemProps {
+  index: number
+  onOpacityPress: (post: IPost) => void
+  post: IPost
+  reads: string[]
+}
+
 export interface IPost {
   body: string
   id: number
