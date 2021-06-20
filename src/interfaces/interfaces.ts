@@ -39,9 +39,16 @@ export interface IComment {
 }
 
 export interface IPostsState {
-  posts: IPost[] | null
+  favorites: string[]
+  posts: IPost[]
+  reads: string[]
 }
 
 export interface IPostsContextProps {
   postsState: IPostsState
+  getFavorites: () => void
+  getPosts: () => void
+  getReads: () => void
+  setPosts: (posts: IPost[]) => void
+  resetPosts: () => void
 }

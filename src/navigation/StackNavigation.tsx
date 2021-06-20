@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -6,27 +6,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { colors } from '../theme/appTheme'
 import { RootStackParams } from '../interfaces/interfaces'
+import { PostsContext } from '../context/PostsContext'
 import PostsScreen from '../screens/PostsScreen'
 import PostScreen from '../screens/PostScreen'
 
 const { Navigator, Screen } = createStackNavigator<RootStackParams>()
 
 const StackNavigation = () => {
-  const [favorites, setFavorites] = useState<string[]>([])
+  const {
+    getFavorites,
+    postsState: { favorites },
+    resetPosts
+  } = useContext(PostsContext)
 
   useEffect(() => {
     getFavorites()
   }, [])
-
-  const getFavorites = async () => {
-    const storagedFavorites: string | null = await AsyncStorage.getItem(
-      'favorites'
-    )
-    if (storagedFavorites) {
-      const stringToArrayFavorites = JSON.parse(storagedFavorites)
-      setFavorites([...stringToArrayFavorites])
-    }
-  }
 
   const addToFavorites = async (postId: string) => {
     let stringifiedArray
@@ -64,7 +59,7 @@ const StackNavigation = () => {
         component={PostsScreen}
         options={{
           headerRight: () => (
-            <TouchableOpacity onPress={() => {}} style={styles.favoriteIcon}>
+            <TouchableOpacity onPress={resetPosts} style={styles.favoriteIcon}>
               <Icon name="reload" size={23} color={colors.white} />
             </TouchableOpacity>
           )

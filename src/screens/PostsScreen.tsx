@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useContext, useEffect, useState } from 'react'
 import {
   FlatList,
   Platform,
@@ -10,14 +10,18 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { jsonPlaceHolderServices } from '../services/jsonPlaceHolderServices'
 import { colors } from '../theme/appTheme'
 import { IPostsScreenProps, IPost } from '../interfaces/interfaces'
 import PostItem from '../components/PostItem'
+import { PostsContext } from '../context/PostsContext'
 
 const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
-  const [posts, setPosts] = useState<IPost[] | null>(null)
-  const [reads, setReads] = useState<string[]>([])
+  const {
+    getPosts,
+    getReads,
+    postsState: { posts, reads },
+    setPosts
+  } = useContext(PostsContext)
 
   useEffect(() => {
     const getPostsStoraged = async () => {
@@ -31,15 +35,6 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
       } catch (error) {}
     }
     getPostsStoraged()
-
-    const getPosts = async () => {
-      try {
-        const { data } = await jsonPlaceHolderServices.getPosts()
-        setPosts(data)
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
   }, [])
 
   useEffect(() => {
@@ -56,29 +51,16 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
     }
   }, [posts])
 
-  const getReads = async () => {
-    const storagedReads: string | null = await AsyncStorage.getItem('favorites')
-    if (storagedReads) {
-      const stringToArrayFavorites = JSON.parse(storagedReads)
-      setReads([...stringToArrayFavorites])
-    }
-  }
-
   const onOpacityPress = async (post: IPost) => {
     const postId = post.id.toString()
-    let stringifiedReads
-    if (reads.includes(postId)) {
-      const removedPostId = reads.filter(read => read !== postId)
-      stringifiedReads = JSON.stringify([...removedPostId])
-    } else {
-      stringifiedReads = JSON.stringify([...reads, postId])
-    }
-
-    try {
-      await AsyncStorage.setItem('favorites', stringifiedReads)
-      getReads()
-    } catch (error) {
-      console.log(error)
+    if (!reads.includes(postId)) {
+      const stringifiedReads = JSON.stringify([...reads, postId])
+      try {
+        await AsyncStorage.setItem('reads', stringifiedReads)
+        getReads()
+      } catch (error) {
+        console.log(error)
+      }
     }
     navigation.navigate('Post', { ...post })
   }
@@ -88,7 +70,7 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
   }
 
   const deleteAllPosts = () => {
-    setPosts(null)
+    setPosts([])
   }
 
   const deleteIOSButton = () => (
@@ -108,27 +90,21 @@ const PostsScreen: FC<IPostsScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {posts && (
-        <>
-          <FlatList
-            keyExtractor={({ id }) => `${id}`}
-            data={posts}
-            renderItem={({ item: post, index }) => (
-              <PostItem
-                deletePost={deletePost}
-                index={index}
-                onOpacityPress={onOpacityPress}
-                post={post}
-                reads={reads}
-              />
-            )}
-            testID="posts"
+      <FlatList
+        keyExtractor={({ id }) => `${id}`}
+        data={posts}
+        renderItem={({ item: post, index }) => (
+          <PostItem
+            deletePost={deletePost}
+            index={index}
+            onOpacityPress={onOpacityPress}
+            post={post}
+            reads={reads}
           />
-          {Platform.OS === 'android'
-            ? deleteAndroidButton()
-            : deleteIOSButton()}
-        </>
-      )}
+        )}
+        testID="posts"
+      />
+      {Platform.OS === 'android' ? deleteAndroidButton() : deleteIOSButton()}
     </View>
   )
 }

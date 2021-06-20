@@ -5,10 +5,11 @@ import { NavigationContainer } from '@react-navigation/native'
 
 import { colors } from './src/theme/appTheme'
 import StackNavigation from './src/navigation/StackNavigation'
+import { PostsProvider } from './src/context/PostsContext'
 
 const App = () => {
   return (
-    <>
+    <PostsProvider>
       <SafeAreaView
         style={{
           flex: 1,
@@ -21,7 +22,7 @@ const App = () => {
           <StackNavigation />
         </NavigationContainer>
       </SafeAreaView>
-    </>
+    </PostsProvider>
   )
 }
 
