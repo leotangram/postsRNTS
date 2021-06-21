@@ -2,7 +2,7 @@
 
 ## Steps to run the App
 
-- In order to run the android and ios simulators, please follow the steps in the official [React Native documentation](https://archive.reactnative.dev/docs/getting-started).
+- In order to run the android and ios simulators, please follow the steps in the official [React Native documentation](https://archive.reactnative.dev/docs/getting-started) in the `React Native CLI Quickstart` Tab.
 
 * Clone this repository
 * Install the dependencies with the command `npm i` or `yarn`
